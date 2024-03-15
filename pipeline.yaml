@@ -15,7 +15,7 @@ spec:
     - default: 'image-registry.openshift-image-registry.svc:5000/test/code-with-quarkus'
       name: outputContainerImage
       type: string
-    - default: ./workspace/output/src/main/docker/Dockerfile.jvm
+    - default: ./src/main/docker/Dockerfile.jvm
       name: containerfilepath
       type: string
   tasks:
