@@ -1,24 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  creationTimestamp: '2024-03-15T11:04:49Z'
-  generation: 9
-  managedFields:
-    - apiVersion: tekton.dev/v1
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:spec':
-          .: {}
-          'f:params': {}
-          'f:steps': {}
-          'f:workspaces': {}
-      manager: Mozilla
-      operation: Update
-      time: '2024-03-15T13:37:06Z'
   name: multiarch-buildah
-  namespace: test
-  resourceVersion: '1366888'
-  uid: 9899e68a-68d0-4a4c-be4d-5b917c1b309c
 spec:
   params:
     - name: buildahVersion
@@ -42,8 +25,6 @@ spec:
         #!/bin/bash
 
         set -Eeuo pipefail
-
-        ls -alh /src
 
         function build () {
           echo "========================================================="
