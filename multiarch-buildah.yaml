@@ -1,0 +1,92 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  creationTimestamp: '2024-03-15T11:04:49Z'
+  generation: 9
+  managedFields:
+    - apiVersion: tekton.dev/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          .: {}
+          'f:params': {}
+          'f:steps': {}
+          'f:workspaces': {}
+      manager: Mozilla
+      operation: Update
+      time: '2024-03-15T13:37:06Z'
+  name: multiarch-buildah
+  namespace: test
+  resourceVersion: '1366888'
+  uid: 9899e68a-68d0-4a4c-be4d-5b917c1b309c
+spec:
+  params:
+    - name: buildahVersion
+      type: string
+    - name: containerfilepath
+      type: string
+    - name: buildahPlatforms
+      type: array
+    - name: outputContainerImage
+      type: string
+  steps:
+    - args:
+        - '$(params.buildahPlatforms[*])'
+      computeResources: {}
+      env:
+        - name: TARGET_IMAGE
+          value: $(params.outputContainerImage)
+      image: 'quay.io/containers/buildah:$(params.buildahVersion)'
+      name: buildah
+      script: |
+        #!/bin/bash
+
+        set -Eeuo pipefail
+
+        ls -alh /src
+
+        function build () {
+          echo "========================================================="
+          echo " buildah build $TARGET_IMAGE for ${1:-default}"
+          echo "========================================================="
+          echo
+
+          extra_args=""
+          if [ -n "${1:-}" ]; then
+            extra_args="$extra_args --platform $1"
+          fi
+          if [ -n "${CONTAINERFILE:-}" ]; then
+            extra_args="$extra_args --file $CONTAINERFILE"
+          fi
+
+          buildah bud --storage-driver vfs --manifest tekton -t $TARGET_IMAGE --file $(params.containerfilepath) .
+          echo
+        }
+
+        function push () {
+          echo "========================================================="
+          echo " buildah push $1"
+          echo "========================================================="
+          echo
+          buildah manifest push --storage-driver vfs --all tekton "docker://$1"
+          echo
+        }
+
+        for platform; do
+          build "$platform"
+        done
+
+        push "$TARGET_IMAGE:latest"
+
+        exit 0      
+      securityContext:
+        capabilities:
+          add:
+            - SYS_ADMIN
+        privileged: true
+      workingDir: /src
+  workspaces:
+    - mountPath: /src
+      name: src
+    - mountPath: /var/lib/containers
+      name: containers
