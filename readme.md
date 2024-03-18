@@ -10,8 +10,7 @@ Le fichier nodeselector contient la directive qui permet d'aiguiller vers une no
 oc apply -f daemonset.yaml && \    
 oc apply -f pvc.yaml && \    
 oc apply -f multiarch-buildah.yaml && \    
-oc apply -f pipeline.yaml && \    
-oc apply -f nodeselector.yaml && \    
+oc apply -f pipeline.yaml    
 ```
 
 ### Lancer le pipeline avec les paramètres par défault.
