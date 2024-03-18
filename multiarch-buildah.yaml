@@ -40,7 +40,7 @@ spec:
             extra_args="$extra_args --file $CONTAINERFILE"
           fi
 
-          buildah bud --storage-driver vfs --manifest tekton -t $TARGET_IMAGE --file $(params.containerfilepath) .
+          buildah bud --storage-driver vfs --manifest tekton -t $TARGET_IMAGE $extra_args .
           echo
         }
 
