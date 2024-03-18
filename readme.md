@@ -2,9 +2,12 @@
 
 Le fichier nodeselector contient la directive qui permet d'aiguiller vers une node dans une architecture spécifique.
 
+## Solution avec la virtualisation QEMU.
+
 ### Creer les ressources
 
 ```
+oc apply -f daemonset.yaml && \    
 oc apply -f pvc.yaml && \    
 oc apply -f multiarch-buildah.yaml && \    
 oc apply -f pipeline.yaml && \    
@@ -22,7 +25,6 @@ tkn pipeline start buildah-multiarch \
     --workspace name=scratch,claimName=source-pvc,subPath=src \
     --showlog
 ```
-
 
 ### Lancer le pipeline avec des paramètres spécifiques.
 
