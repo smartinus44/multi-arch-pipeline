@@ -4,13 +4,16 @@ Le fichier nodeselector contient la directive qui permet d'aiguiller vers une no
 
 ### Creer les ressources
 
-oc apply -f pvc.yaml && \
-oc apply -f multiarch-buildah.yaml && \
-oc apply -f pipeline.yaml && \
-oc apply -f nodeselector.yaml && \
+```
+oc apply -f pvc.yaml && \    
+oc apply -f multiarch-buildah.yaml && \    
+oc apply -f pipeline.yaml && \    
+oc apply -f nodeselector.yaml && \    
+```
 
 ### Lancer le pipeline avec les paramètres par défault.
 
+```
 tkn pipeline start buildah-multiarch \
     --namespace=test \
     --pod-template [nodeselector.yaml](./nodeselector.yaml) \
@@ -18,10 +21,12 @@ tkn pipeline start buildah-multiarch \
     --use-param-defaults \
     --workspace name=scratch,claimName=source-pvc,subPath=src \
     --showlog
+```
 
 
 ### Lancer le pipeline avec des paramètres spécifiques.
 
+```
 tkn pipeline start buildah-multiarch \
     --namespace=test \
     --pod-template nodeselector.yaml \
@@ -32,3 +37,4 @@ tkn pipeline start buildah-multiarch \
     --param containerfilepath=Containerfile \
     --workspace name=scratch,claimName=source-pvc,subPath=src \
     --showlog
+```
