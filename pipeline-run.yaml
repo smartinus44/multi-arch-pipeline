@@ -1,0 +1,114 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: buildah-multiarch-run
+spec:
+  params:
+  - name: buildahPlatforms
+    value:
+    - linux/x86_64
+    - linux/arm64/v8
+  - name: containerfilepath
+    value: Containerfile
+  - name: gitRepositoryURL
+    value: https://github.com/smartinus44/buildah-multiarchitecture-build.git
+  - name: outputContainerImage
+    value: quay.io/rh_ee_symartin/multiarch_test/code-with-quarkus
+  pipelineRef:
+    name: buildah-multiarch
+  taskRunTemplate:
+    podTemplate:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+    serviceAccountName: pipeline
+  timeouts:
+    pipeline: 1h0m0s
+  workspaces:
+  - name: scratch
+    persistentVolumeClaim:
+      claimName: source-pvc
+    subPath: src
+  pipelineSpec:
+    params:
+    - default:
+      - linux/x86_64
+      - linux/arm64/v8
+      name: buildahPlatforms
+      type: array
+    - default: https://github.com/smartinus44/devfile-sample-code-with-quarkus.git
+      name: gitRepositoryURL
+      type: string
+    - default: quay.io/rh_ee_symartin/multiarch_test/code-with-quarkus
+      name: outputContainerImage
+      type: string
+    - default: ./src/main/docker/Dockerfile.jvm
+      name: containerfilepath
+      type: string
+    tasks:
+    - name: multiarch-buildah
+      params:
+      - name: buildahVersion
+        value: latest
+      - name: containerfilepath
+        value: Containerfile
+      - name: buildahPlatforms
+        value:
+        - linux/x86_64
+        - linux/arm64/v8
+      - name: outputContainerImage
+        value: quay.io/rh_ee_symartin/multiarch_test/code-with-quarkus
+      runAfter:
+      - git-clone
+      taskRef:
+        kind: Task
+        name: multiarch-buildah
+      workspaces:
+      - name: src
+        subPath: src
+        workspace: scratch
+      - name: containers
+        subPath: containers
+        workspace: scratch
+    - name: git-clone
+      params:
+      - name: url
+        value: https://github.com/smartinus44/buildah-multiarchitecture-build.git
+      - name: revision
+        value: ""
+      - name: refspec
+        value: ""
+      - name: submodules
+        value: "true"
+      - name: depth
+        value: "1"
+      - name: sslVerify
+        value: "true"
+      - name: crtFileName
+        value: ca-bundle.crt
+      - name: subdirectory
+        value: ""
+      - name: sparseCheckoutDirectories
+        value: ""
+      - name: deleteExisting
+        value: "true"
+      - name: httpProxy
+        value: ""
+      - name: httpsProxy
+        value: ""
+      - name: noProxy
+        value: ""
+      - name: verbose
+        value: "true"
+      - name: gitInitImage
+        value: registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:89fc179cd82c8ddf010af89213d3f224b99863fa21deaea5c26ab0b4c214d01b
+      - name: userHome
+        value: /home/git
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+      - name: output
+        subPath: src
+        workspace: scratch
+    workspaces:
+    - name: scratch

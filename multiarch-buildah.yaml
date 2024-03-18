@@ -2,6 +2,7 @@ apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: multiarch-buildah
+  namespace: test
 spec:
   params:
     - name: buildahVersion
@@ -36,8 +37,9 @@ spec:
           if [ -n "${1:-}" ]; then
             extra_args="$extra_args --platform $1"
           fi
-          if [ -n "${CONTAINERFILE:-}" ]; then
-            extra_args="$extra_args --file $CONTAINERFILE"
+
+          if [ -n "$(params.containerfilepath)" ]; then
+            extra_args="$extra_args --file $(params.containerfilepath)"
           fi
 
           buildah bud --storage-driver vfs --manifest tekton -t $TARGET_IMAGE $extra_args .
