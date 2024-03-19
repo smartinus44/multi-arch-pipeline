@@ -1,8 +1,10 @@
 # Multiarch pipeline with OpenShift pipeline
 
-Le fichier nodeselector contient la directive qui permet d'aiguiller vers une node dans une architecture spécifique.
+> Le cluster OpensShift utilisé contient des workers en arm64 et amd64, dans la première solution on utilise que les workers en amd64 avec une émulation QEMU opéré via un daemonset.
+>
+> Le fichier [nodeselector.yaml](./nodeselector.yaml) contient la directive qui permet d'aiguiller vers une node dans une architecture spécifique.
 
-## Solution avec la virtualisation QEMU.
+## Solution 1: avec la émulation QEMU.
 
 ### Creer les ressources
 
@@ -39,3 +41,10 @@ tkn pipeline start buildah-multiarch \
     --workspace name=scratch,claimName=source-pvc,subPath=src \
     --showlog
 ```
+
+## Solution 2: sans la émulation QEMU.
+
+> Dans cette seconde solution on utilise les workers en amd64 et en arm64.
+>
+> WIP
+
