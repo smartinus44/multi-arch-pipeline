@@ -10,7 +10,7 @@
 [] ...
 
 
-## Solution 1: avec la émulation QEMU.
+## Solution 1: avec l'émulation QEMU.
 
 ### Creer les ressources
 
@@ -48,7 +48,7 @@ tkn pipeline start buildah-multiarch \
     --showlog
 ```
 
-## Solution 2: sans la émulation QEMU.
+## Solution 2: sans l'émulation QEMU.
 
 > Dans cette seconde solution on utilise les workers en amd64 et en arm64.
 >
@@ -56,9 +56,9 @@ tkn pipeline start buildah-multiarch \
 
 
 ```
-oc apply -f ./solution2/pvc-arm64.yaml
+oc apply -f ./solution2/pvc-arm64.yaml && \
+oc apply -f ./solution2/pvc-amd64.yaml
 ```
-
 
 ```
 tkn pipeline start multiarch-without-emulation \
