@@ -2,17 +2,23 @@
 
 > Le cluster OpensShift utilisé contient des workers en arm64 et amd64, dans la première solution on utilise que les workers en amd64 avec une émulation QEMU opéré via un daemonset.
 >
-> Le fichier [nodeselector.yaml](./nodeselector.yaml) contient la directive qui permet d'aiguiller vers une node dans une architecture spécifique.
+> Le fichier [nodeselector.yaml](./solution1/nodeselector.yaml) contient la directive qui permet d'aiguiller vers une node dans une architecture spécifique.
+
+## Contraintes
+
+[] On utilise buildah
+[] ...
+
 
 ## Solution 1: avec la émulation QEMU.
 
 ### Creer les ressources
 
 ```
-oc apply -f daemonset.yaml && \    
-oc apply -f pvc.yaml && \    
-oc apply -f multiarch-buildah.yaml && \    
-oc apply -f pipeline.yaml    
+oc apply -f ./solution1/daemonset.yaml && \    
+oc apply -f ./solution1/pvc.yaml && \    
+oc apply -f ./solution1/multiarch-buildah.yaml && \    
+oc apply -f ./solution1/pipeline.yaml    
 ```
 
 ### Lancer le pipeline avec les paramètres par défault.
@@ -20,7 +26,7 @@ oc apply -f pipeline.yaml
 ```
 tkn pipeline start buildah-multiarch \
     --namespace=test \
-    --pod-template [nodeselector.yaml](./nodeselector.yaml) \
+    --pod-template [nodeselector.yaml](./solution1/nodeselector.yaml) \
     --serviceaccount=pipeline \
     --use-param-defaults \
     --workspace name=scratch,claimName=source-pvc,subPath=src \
@@ -48,3 +54,30 @@ tkn pipeline start buildah-multiarch \
 >
 > WIP
 
+
+```
+oc apply -f ./solution2/pvc-arm64.yaml
+```
+
+
+```
+tkn pipeline start multiarch-without-emulation \
+    --namespace=test \
+    --pod-template ./solution2/nodeselector-arm64.yaml \
+    --workspace name=scratch,claimName=source-pvc-arm64 \
+    --serviceaccount=pipeline \
+    --use-param-defaults \
+    --param platarch=linux/arm64 \
+    --showlog
+```
+
+```
+tkn pipeline start multiarch-without-emulation \
+    --namespace=test \
+    --pod-template ./solution2/nodeselector-amd64.yaml \
+    --workspace name=scratch,claimName=source-pvc-amd64 \
+    --serviceaccount=pipeline \
+    --use-param-defaults \
+    --param platarch=linux/amd64 \
+    --showlog
+```
