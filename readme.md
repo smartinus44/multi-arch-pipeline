@@ -12,7 +12,7 @@
 
 ## Solution 1: avec l'émulation QEMU.
 
-![Schéma de la solution 1][./Solution1.jpg]
+![Schéma de la solution 1](./Solution1.jpg "Solution 1")
 
 ### Nécessite d'avoir les privilèges suffisants.
 
