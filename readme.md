@@ -6,8 +6,8 @@
 
 ## Contraintes
 
-[] On utilise buildah
-[] ...
+- [x] On utilise buildah
+- [] ...
 
 
 ## Solution 1: avec l'émulation QEMU.
@@ -31,9 +31,9 @@ oc adm policy add-scc-to-user privileged -z  <<your_sa>> -n <<your_project>>
 ### Creer les ressources
 
 ```
+oc apply -f ./solution1/tasks && \    
 oc apply -f ./solution1/daemonset.yaml && \    
 oc apply -f ./solution1/pvc.yaml && \    
-oc apply -f ./solution1/multiarch-buildah.yaml && \    
 oc apply -f ./solution1/pipeline.yaml    
 ```
 
