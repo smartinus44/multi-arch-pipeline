@@ -6,8 +6,9 @@
 
 ## Contraintes
 
-- [x] On utilise buildah
-- [] ...
+- [x] On utilise buildah pour construire nos images.
+- [ ] Notre cluster à un worker amd64 et un arm64 au minimum.
+- [ ] ...
 
 
 ## Solution 1: avec l'émulation QEMU.
@@ -28,7 +29,7 @@ Vous pouvez créer votre propre compte de service et lui appliquer les bonnes co
 oc adm policy add-scc-to-user privileged -z  <<your_sa>> -n <<your_project>>
 ```
 
-### Creer les ressources
+### Créer les ressources
 
 ```
 oc apply -f ./solution1/tasks && \    
@@ -36,6 +37,10 @@ oc apply -f ./solution1/daemonset.yaml && \
 oc apply -f ./solution1/pvc.yaml && \    
 oc apply -f ./solution1/pipeline.yaml    
 ```
+
+_Détail du pipeline de la solution 1:_
+![Détails de la pipeline](./solution1-details.png "Détail du pipeline de la solution 1")
+
 
 ### Lancer le pipeline avec les paramètres par défault.
 
@@ -78,7 +83,10 @@ oc apply -f ./solution2/tasks && \
 oc apply -f ./solution2/pvc-arm64.yaml && \
 oc apply -f ./solution2/pvc-amd64.yaml
 ```
+_Détail du pipeline de la solution 2:_
+![Détails de la pipeline](./solution2-details.png "Détail du pipeline de la solution 2")
 
+### Lancer le pipeline avec les paramètres pour arm64.
 ```
 tkn pipeline start multiarch-without-emulation \
     --namespace=test \
@@ -90,6 +98,7 @@ tkn pipeline start multiarch-without-emulation \
     --showlog
 ```
 
+### Lancer le pipeline avec les paramètres pour amd64.
 ```
 tkn pipeline start multiarch-without-emulation \
     --namespace=test \
