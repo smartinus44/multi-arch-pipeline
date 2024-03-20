@@ -21,8 +21,6 @@ spec:
       nodeSelector:
         kubernetes.io/arch: amd64
     serviceAccountName: pipeline
-  timeouts:
-    pipeline: 1h0m0s
   workspaces:
   - name: scratch
     persistentVolumeClaim:

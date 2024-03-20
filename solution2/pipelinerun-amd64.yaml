@@ -1,0 +1,21 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  labels:
+    tekton.dev/pipeline: multiarch-without-emulation
+  name: multiarch-without-emulation-run
+spec:
+  params:
+  - name: platarch
+    value: linux/amd64
+  pipelineRef:
+    name: multiarch-without-emulation
+  taskRunTemplate:
+    podTemplate:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+    serviceAccountName: pipeline
+  workspaces:
+  - name: scratch
+    persistentVolumeClaim:
+      claimName: source-pvc-amd64

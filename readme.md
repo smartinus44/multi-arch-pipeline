@@ -74,6 +74,7 @@ tkn pipeline start buildah-multiarch \
 
 
 ```
+oc apply -f ./solution2/tasks && \
 oc apply -f ./solution2/pvc-arm64.yaml && \
 oc apply -f ./solution2/pvc-amd64.yaml
 ```

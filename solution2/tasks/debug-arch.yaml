@@ -1,0 +1,12 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: debug-arch
+spec:
+  steps:
+    - image: alpine
+      name: echo
+      script: |
+        #!/bin/sh
+        echo "Hello World, you are on this arch:"
+        arch
