@@ -70,6 +70,8 @@ tkn pipeline start buildah-multiarch \
 >
 > WIP
 
+![Schéma de la solution 2](./Solution2.jpg "Solution 2")
+
 
 ```
 oc apply -f ./solution2/pvc-arm64.yaml && \
