@@ -12,6 +12,21 @@
 
 ## Solution 1: avec l'émulation QEMU.
 
+
+### Nécessite d'avoir les privilèges suffisants.
+
+Vérifier au préalable les contraintes de sécurité de votre cluster:
+
+```
+oc get scc
+```
+
+Vous pouvez créer votre propre compte de service et lui appliquer les bonnes contraintes de sécurités pour faire une élévation de privilège:
+
+```
+oc adm policy add-scc-to-user privileged -z  <<your_sa>> -n <<your_project>>
+```
+
 ### Creer les ressources
 
 ```
