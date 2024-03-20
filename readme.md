@@ -39,6 +39,7 @@ oc apply -f ./solution1/pipeline.yaml
 ```
 
 _Détail du pipeline de la solution 1:_
+
 ![Détails de la pipeline](./solution1-details.png "Détail du pipeline de la solution 1")
 
 
@@ -83,7 +84,9 @@ oc apply -f ./solution2/tasks && \
 oc apply -f ./solution2/pvc-arm64.yaml && \
 oc apply -f ./solution2/pvc-amd64.yaml
 ```
+
 _Détail du pipeline de la solution 2:_
+
 ![Détails de la pipeline](./solution2-details.png "Détail du pipeline de la solution 2")
 
 ### Lancer le pipeline avec les paramètres pour arm64.
