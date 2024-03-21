@@ -42,6 +42,7 @@ _Détail du pipeline de la solution 1:_
 
 ![Détails de la pipeline](./solution1-details.png "Détail du pipeline de la solution 1")
 
+Le pod-template "nodeselector" permet de cibler via une affinité la machine hôte sur laquelle le build va être effectué avec l'émulation QEMU, dans cette exemple, j'ai testé avec amd64.
 
 ### Lancer le pipeline avec les paramètres par défault.
 
@@ -60,7 +61,7 @@ tkn pipeline start buildah-multiarch \
 ```
 tkn pipeline start buildah-multiarch \
     --namespace=test \
-    --pod-template nodeselector.yaml \
+    --pod-template [nodeselector.yaml](./solution1/nodeselector.yaml) \
     --serviceaccount=pipeline \
     --param buildahPlatforms=linux/x86_64,linux/arm64/v8 \
     --param gitRepositoryURL=https://github.com/smartinus44/buildah-multiarchitecture-build.git \
@@ -70,11 +71,15 @@ tkn pipeline start buildah-multiarch \
     --showlog
 ```
 
+_Images produites avec la solution 1:_
+
+![Images produites](./solution1-quay.png "Images produites avec la solution 1")
+
 ## Solution 2: sans l'émulation QEMU via deux pipelines indépendants.
 
 > Dans cette seconde solution on utilise les workers en amd64 et en arm64.
 >
-> WIP
+> Le choix de la plateforme se fait au choix du pvc qui dépend d'une affinité arm64 ou amd64.
 
 ![Schéma de la solution 2](./Solution2.jpg "Solution 2")
 
@@ -93,7 +98,6 @@ _Détail du pipeline de la solution 2:_
 ```
 tkn pipeline start multiarch-without-emulation \
     --namespace=test \
-    --pod-template ./solution2/nodeselector-arm64.yaml \
     --workspace name=scratch,claimName=source-pvc-arm64 \
     --serviceaccount=pipeline \
     --use-param-defaults \
@@ -112,6 +116,10 @@ tkn pipeline start multiarch-without-emulation \
     --param platarch=linux/amd64 \
     --showlog
 ```
+
+_Images produites avec la solution 2:_
+
+![Images produites](./solution2-quay.png "Images produites avec la solution 2")
 
 
 ## Solution 3: sans l'émulation QEMU via un pipelines paramétrable pour chacune des architectures.
@@ -142,3 +150,7 @@ tkn pipeline start multiarch-build-tag \
 Il est possible de lancer la pipeline via l'interface graphique.
 
 ![Paramètres de lancement de la pipeline](./solution3-params.png "Paramètres de lancement de la pipeline")
+
+_Images produites avec la solution 3:_
+
+![Images produites](./solution3-quay.png "Images produites avec la solution 3")
