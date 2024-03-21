@@ -1,4 +1,4 @@
-# Multiarch pipeline with OpenShift pipeline
+# Multi-architecture pipeline with OpenShift pipeline
 
 > Le cluster OpensShift utilisé contient des workers en arm64 et amd64, dans la première solution on utilise que les workers en amd64 avec une émulation QEMU opéré via un daemonset.
 >
@@ -7,8 +7,8 @@
 ## Contraintes
 
 - [x] On utilise buildah pour construire nos images.
-- [ ] Notre cluster à un worker amd64 et un arm64 au minimum.
-- [ ] ...
+- [x] Notre cluster à un worker amd64 et un arm64 au minimum.
+- [x] On contrôle le placement des nodes en utilisant les règles de "node affinity".
 
 
 ## Solution 1: avec l'émulation QEMU.
@@ -70,7 +70,7 @@ tkn pipeline start buildah-multiarch \
     --showlog
 ```
 
-## Solution 2: sans l'émulation QEMU.
+## Solution 2: sans l'émulation QEMU via deux pipelines indépendants.
 
 > Dans cette seconde solution on utilise les workers en amd64 et en arm64.
 >
@@ -112,3 +112,33 @@ tkn pipeline start multiarch-without-emulation \
     --param platarch=linux/amd64 \
     --showlog
 ```
+
+
+## Solution 3: sans l'émulation QEMU via un pipelines paramétrable pour chacune des architectures.
+
+```
+oc apply -f ./solution3/tasks && \
+oc apply -f ./solution3/pvc-arm64.yaml && \
+oc apply -f ./solution3/pvc-amd64.yaml && \
+oc apply -f ./solution3/pipeline.yaml    
+```
+
+_Détail du pipeline de la solution 3:_
+
+![Détails de la pipeline](./solution3-details.png "Détail du pipeline de la solution 3")
+
+### Lancer le pipeline avec les paramètres, exemple pour le tag 1.2.
+```
+tkn pipeline start multiarch-build-tag \
+    --namespace=test \
+    --workspace name=scratch-amd64,claimName=source-pvc-amd64 \
+    --workspace name=scratch-arm64,claimName=source-pvc-arm64 \
+    --serviceaccount=pipeline \
+    --use-param-defaults \
+    --param outputContainerTag=1.2
+    --showlog
+```
+
+Il est possible de lancer la pipeline via l'interface graphique.
+
+![Paramètres de lancement de la pipeline](./solution3-params.png "Paramètres de lancement de la pipeline")

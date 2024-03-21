@@ -1,0 +1,157 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: multiarch-build-tag
+  namespace: test
+spec:
+  params:
+    - default: 'https://github.com/smartinus44/buildah-multiarchitecture-build'
+      name: gitRepositoryURL
+      type: string
+    - default: linux/x86_64
+      name: platformAmd
+      type: string
+    - default: quay.io/rh_ee_symartin/multiarch_test_configurable/dummyimage
+      name: outputContainerImage
+      type: string
+    - default: linux/arm64/v8
+      name: platformArm
+      type: string
+    - default: '1.0'
+      name: outputContainerTag
+      type: string
+  tasks:
+    - name: git-clone-arm64
+      params:
+        - name: url
+          value: $(params.gitRepositoryURL)
+        - name: revision
+          value: ''
+        - name: refspec
+          value: ''
+        - name: submodules
+          value: 'true'
+        - name: depth
+          value: '1'
+        - name: sslVerify
+          value: 'true'
+        - name: crtFileName
+          value: ca-bundle.crt
+        - name: subdirectory
+          value: ''
+        - name: sparseCheckoutDirectories
+          value: ''
+        - name: deleteExisting
+          value: 'true'
+        - name: httpProxy
+          value: ''
+        - name: httpsProxy
+          value: ''
+        - name: noProxy
+          value: ''
+        - name: verbose
+          value: 'true'
+        - name: gitInitImage
+          value: >-
+            registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:84c7b5115270e63701e8b8768b9d0908c91a88d22ddeb1a11e0411f648abbb26
+        - name: userHome
+          value: /home/git
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: scratch-arm64
+    - name: git-clone-amd64
+      params:
+        - name: url
+          value: $(params.gitRepositoryURL)
+        - name: revision
+          value: ''
+        - name: refspec
+          value: ''
+        - name: submodules
+          value: 'true'
+        - name: depth
+          value: '1'
+        - name: sslVerify
+          value: 'true'
+        - name: crtFileName
+          value: ca-bundle.crt
+        - name: subdirectory
+          value: ''
+        - name: sparseCheckoutDirectories
+          value: ''
+        - name: deleteExisting
+          value: 'true'
+        - name: httpProxy
+          value: ''
+        - name: httpsProxy
+          value: ''
+        - name: noProxy
+          value: ''
+        - name: verbose
+          value: 'true'
+        - name: gitInitImage
+          value: >-
+            registry.redhat.io/openshift-pipelines/pipelines-git-init-rhel8@sha256:84c7b5115270e63701e8b8768b9d0908c91a88d22ddeb1a11e0411f648abbb26
+        - name: userHome
+          value: /home/git
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: scratch-amd64
+    - name: buildah-build-and-push-to-the-host-arch-arm64
+      params:
+        - name: buildahVersion
+          value: latest
+        - name: containerfilepath
+          value: ./Containerfile
+        - name: buildahPlatform
+          value: $(params.platformArm)
+        - name: outputContainerImage
+          value: $(params.outputContainerImage)
+        - name: outputContainerTag
+          value: $(params.outputContainerTag)
+      runAfter:
+        - git-clone-arm64
+        - git-clone-amd64
+      taskRef:
+        kind: Task
+        name: buildah-build-and-push-to-the-host-arch
+      workspaces:
+        - name: src
+          workspace: scratch-arm64
+        - name: containers
+          workspace: scratch-arm64
+    - name: buildah-build-and-push-to-the-host-arch-amd64
+      params:
+        - name: buildahVersion
+          value: latest
+        - name: containerfilepath
+          value: ./Containerfile
+        - name: buildahPlatform
+          value: $(params.platformAmd)
+        - name: outputContainerImage
+          value: $(params.outputContainerImage)
+        - name: outputContainerTag
+          value: $(params.outputContainerTag)
+      runAfter:
+        - git-clone-arm64
+        - git-clone-amd64
+      taskRef:
+        kind: Task
+        name: buildah-build-and-push-to-the-host-arch
+      workspaces:
+        - name: src
+          workspace: scratch-amd64
+        - name: containers
+          workspace: scratch-amd64
+  workspaces:
+    - name: scratch-arm64
+      optional: false
+    - name: scratch-amd64
+      optional: false
+  finally: []

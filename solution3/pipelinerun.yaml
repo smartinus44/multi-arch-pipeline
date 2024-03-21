@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  labels:
+    tekton.dev/pipeline: multiarch-build-tag
+  name: multiarch-build-tag-test
+  namespace: test
+spec:
+  params:
+  - name: gitRepositoryURL
+    value: https://github.com/smartinus44/buildah-multiarchitecture-build
+  - name: platformAmd
+    value: linux/x86_64
+  - name: outputContainerImage
+    value: quay.io/rh_ee_symartin/multiarch_test_configurable/dummyimage
+  - name: platformArm
+    value: linux/arm64/v8
+  - name: outputContainerTag
+    value: "1.1"
+  pipelineRef:
+    name: multiarch-build-tag
+  taskRunTemplate:
+    serviceAccountName: pipeline
+  workspaces:
+  - name: scratch-arm64
+    persistentVolumeClaim:
+      claimName: source-pvc-arm64
+  - name: scratch-amd64
+    persistentVolumeClaim:
+      claimName: source-pvc-amd64
